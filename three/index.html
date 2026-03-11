@@ -1,349 +1,337 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>전문가 입회 평가</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f8f9fa;
-    color: #1a1a1a;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 1rem;
-  }
-  .container {
-    max-width: 720px;
-    width: 100%;
-  }
-  .counter {
-    text-align: center;
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 2rem;
-  }
-  .counter strong {
-    color: #1a1a1a;
-    font-size: 1.3rem;
-  }
-  .section {
-    background: #fff;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-  .section-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #888;
-    margin-bottom: 0.75rem;
-  }
-  .original-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  .original-text {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    flex: 1;
-  }
-  .tooltip-wrap {
-    position: relative;
-    flex-shrink: 0;
-    cursor: help;
-  }
-  .tooltip-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #eee;
-    color: #888;
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin-top: 2px;
-  }
-  .tooltip-wrap:hover .tooltip-icon {
-    background: #7C3AED;
-    color: #fff;
-  }
-  .tooltip-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 32px;
-    width: 320px;
-    background: #1a1a1a;
-    color: #fff;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    z-index: 10;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
-  .tooltip-wrap:hover .tooltip-content {
-    display: block;
-  }
-  .correction-text {
-    font-size: 1.1rem;
-    line-height: 1.8;
-  }
-  .deletion-line {
-    font-size: 0.85rem;
-    line-height: 1.6;
-    color: #bbb;
-    margin-bottom: 0.4rem;
-  }
-  .deletion {
-    color: #e05252;
-    text-decoration: line-through;
-  }
-  .highlight {
-    background: rgba(124, 58, 237, 0.15);
-    color: #7C3AED;
-    border-radius: 2px;
-    padding: 0 1px;
-  }
-  .nav {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1.5rem;
-  }
-  .nav button {
-    padding: 0.6rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    background: #7C3AED;
-    color: #fff;
-    transition: opacity 0.15s;
-  }
-  .nav button:hover:not(:disabled) {
-    opacity: 0.85;
-  }
-  .nav button:disabled {
-    background: #ddd;
-    color: #aaa;
-    cursor: not-allowed;
-  }
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="counter"><strong id="current">1</strong> / <span id="total">0</span></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>전문가 입회 평가</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          "Pretendard",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #f8f9fa;
+        color: #1a1a1a;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 1rem;
+      }
+      .container {
+        max-width: 720px;
+        width: 100%;
+      }
+      .counter {
+        text-align: center;
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 2rem;
+      }
+      .counter strong {
+        color: #1a1a1a;
+        font-size: 1.3rem;
+      }
+      .section {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      .section-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #888;
+        margin-bottom: 0.75rem;
+      }
+      .original-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+      .correction-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+      .deletion-line {
+        font-size: 0.85rem;
+        line-height: 1.6;
+        color: #bbb;
+        margin-bottom: 0.4rem;
+      }
+      .deletion {
+        color: #e05252;
+        text-decoration: line-through;
+      }
+      .highlight {
+        background: rgba(124, 58, 237, 0.15);
+        color: #7c3aed;
+        border-radius: 2px;
+        padding: 0 1px;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+      }
+      .nav button {
+        padding: 0.6rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        background: #7c3aed;
+        color: #fff;
+        transition: opacity 0.15s;
+      }
+      .nav button:hover:not(:disabled) {
+        opacity: 0.85;
+      }
+      .nav button:disabled {
+        background: #ddd;
+        color: #aaa;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="counter">
+        <strong id="current">1</strong> / <span id="total">0</span>
+      </div>
 
-  <div class="section">
-    <div class="section-label">원문</div>
-    <div class="original-row">
-      <div class="original-text" id="original"></div>
-      <div class="tooltip-wrap">
-        <div class="tooltip-icon">?</div>
-        <div class="tooltip-content" id="hint"></div>
+      <div class="section">
+        <div class="section-label">원문</div>
+        <div class="original-text" id="original"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">A 교정문</div>
+        <div class="deletion-line" id="delA"></div>
+        <div class="correction-text" id="corrA"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">B 교정문</div>
+        <div class="deletion-line" id="delB"></div>
+        <div class="correction-text" id="corrB"></div>
+      </div>
+
+      <div class="nav">
+        <button id="prevBtn" onclick="go(-1)">&lt; 이전</button>
+        <button id="nextBtn" onclick="go(1)">다음 &gt;</button>
       </div>
     </div>
-  </div>
 
-  <div class="section">
-    <div class="section-label">A 교정문</div>
-    <div class="deletion-line" id="delA"></div>
-    <div class="correction-text" id="corrA"></div>
-  </div>
+    <script>
+      let data = [];
+      let idx = 0;
 
-  <div class="section">
-    <div class="section-label">B 교정문</div>
-    <div class="deletion-line" id="delB"></div>
-    <div class="correction-text" id="corrB"></div>
-  </div>
+      function parseCSV(text) {
+        const rows = [];
+        let i = 0;
+        const len = text.length;
+        // skip BOM
+        if (text.charCodeAt(0) === 0xfeff) i = 1;
 
-  <div class="nav">
-    <button id="prevBtn" onclick="go(-1)">&lt; 이전</button>
-    <button id="nextBtn" onclick="go(1)">다음 &gt;</button>
-  </div>
-</div>
-
-<script>
-let data = [];
-let idx = 0;
-
-function parseCSV(text) {
-  const rows = [];
-  let i = 0;
-  const len = text.length;
-  // skip BOM
-  if (text.charCodeAt(0) === 0xFEFF) i = 1;
-
-  function readRow() {
-    const fields = [];
-    while (i < len) {
-      if (text[i] === '"') {
-        i++; // skip opening quote
-        let val = '';
-        while (i < len) {
-          if (text[i] === '"') {
-            if (i + 1 < len && text[i + 1] === '"') {
-              val += '"';
-              i += 2;
+        function readRow() {
+          const fields = [];
+          while (i < len) {
+            if (text[i] === '"') {
+              i++; // skip opening quote
+              let val = "";
+              while (i < len) {
+                if (text[i] === '"') {
+                  if (i + 1 < len && text[i + 1] === '"') {
+                    val += '"';
+                    i += 2;
+                  } else {
+                    i++; // skip closing quote
+                    break;
+                  }
+                } else {
+                  val += text[i];
+                  i++;
+                }
+              }
+              fields.push(val);
             } else {
-              i++; // skip closing quote
-              break;
+              let val = "";
+              while (
+                i < len &&
+                text[i] !== "," &&
+                text[i] !== "\n" &&
+                text[i] !== "\r"
+              ) {
+                val += text[i];
+                i++;
+              }
+              fields.push(val);
             }
-          } else {
-            val += text[i];
-            i++;
+            if (i < len && text[i] === ",") {
+              i++;
+              continue;
+            }
+            if (i < len && text[i] === "\r") i++;
+            if (i < len && text[i] === "\n") i++;
+            break;
+          }
+          return fields;
+        }
+
+        // skip header
+        readRow();
+        while (i < len) {
+          const row = readRow();
+          if (row.length >= 4 && row[0].trim()) rows.push(row);
+        }
+        return rows;
+      }
+
+      // Tokenize text into morpheme-like units (어절 + 공백/구두점)
+      function tokenize(text) {
+        const tokens = [];
+        const re = /(\s+)|(\S+)/g;
+        let match;
+        while ((match = re.exec(text)) !== null) {
+          tokens.push({ value: match[0], isSpace: !!match[1] });
+        }
+        return tokens;
+      }
+
+      // LCS-based diff (형태소/어절 단위): returns HTML with highlights for parts in `corr` that differ from `orig`
+      function diffHighlight(orig, corr) {
+        const origTokens = tokenize(orig);
+        const corrTokens = tokenize(corr);
+        const m = origTokens.length,
+          n = corrTokens.length;
+        // Build LCS table on tokens
+        const dp = Array.from({ length: m + 1 }, () => new Uint16Array(n + 1));
+        for (let i = 1; i <= m; i++) {
+          for (let j = 1; j <= n; j++) {
+            dp[i][j] =
+              origTokens[i - 1].value === corrTokens[j - 1].value
+                ? dp[i - 1][j - 1] + 1
+                : Math.max(dp[i - 1][j], dp[i][j - 1]);
           }
         }
-        fields.push(val);
-      } else {
-        let val = '';
-        while (i < len && text[i] !== ',' && text[i] !== '\n' && text[i] !== '\r') {
-          val += text[i];
-          i++;
+        // Backtrack to find which tokens are in LCS (for both orig and corr)
+        const origInLCS = new Uint8Array(m);
+        const corrInLCS = new Uint8Array(n);
+        let i = m,
+          j = n;
+        while (i > 0 && j > 0) {
+          if (origTokens[i - 1].value === corrTokens[j - 1].value) {
+            origInLCS[i - 1] = 1;
+            corrInLCS[j - 1] = 1;
+            i--;
+            j--;
+          } else if (dp[i - 1][j] >= dp[i][j - 1]) {
+            i--;
+          } else {
+            j--;
+          }
         }
-        fields.push(val);
+        // Build correction HTML (added parts highlighted in purple)
+        let corrHtml = "";
+        let inSpan = false;
+        for (let k = 0; k < n; k++) {
+          const token = corrTokens[k];
+          const escaped = escapeHTML(token.value);
+          if (corrInLCS[k] || token.isSpace) {
+            if (inSpan) {
+              corrHtml += "</span>";
+              inSpan = false;
+            }
+            corrHtml += escaped;
+          } else {
+            if (!inSpan) {
+              corrHtml += '<span class="highlight">';
+              inSpan = true;
+            }
+            corrHtml += escaped;
+          }
+        }
+        if (inSpan) corrHtml += "</span>";
+        // Build deletion HTML (deleted parts from original in red)
+        let delHtml = "";
+        inSpan = false;
+        for (let k = 0; k < m; k++) {
+          const token = origTokens[k];
+          const escaped = escapeHTML(token.value);
+          if (origInLCS[k] || token.isSpace) {
+            if (inSpan) {
+              delHtml += "</span>";
+              inSpan = false;
+            }
+            delHtml += escaped;
+          } else {
+            if (!inSpan) {
+              delHtml += '<span class="deletion">';
+              inSpan = true;
+            }
+            delHtml += escaped;
+          }
+        }
+        if (inSpan) delHtml += "</span>";
+        return { corrHtml, delHtml };
       }
-      if (i < len && text[i] === ',') { i++; continue; }
-      if (i < len && text[i] === '\r') i++;
-      if (i < len && text[i] === '\n') i++;
-      break;
-    }
-    return fields;
-  }
 
-  // skip header
-  readRow();
-  while (i < len) {
-    const row = readRow();
-    if (row.length >= 4 && row[0].trim()) rows.push(row);
-  }
-  return rows;
-}
+      function escapeHTML(s) {
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
 
-// Tokenize text into morpheme-like units (어절 + 공백/구두점)
-function tokenize(text) {
-  const tokens = [];
-  const re = /(\s+)|(\S+)/g;
-  let match;
-  while ((match = re.exec(text)) !== null) {
-    tokens.push({ value: match[0], isSpace: !!match[1] });
-  }
-  return tokens;
-}
+      function render() {
+        const row = data[idx];
+        const orig = row[0],
+          hint = row[1],
+          a = row[2],
+          b = row[3];
 
-// LCS-based diff (형태소/어절 단위): returns HTML with highlights for parts in `corr` that differ from `orig`
-function diffHighlight(orig, corr) {
-  const origTokens = tokenize(orig);
-  const corrTokens = tokenize(corr);
-  const m = origTokens.length, n = corrTokens.length;
-  // Build LCS table on tokens
-  const dp = Array.from({ length: m + 1 }, () => new Uint16Array(n + 1));
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      dp[i][j] = origTokens[i - 1].value === corrTokens[j - 1].value
-        ? dp[i - 1][j - 1] + 1
-        : Math.max(dp[i - 1][j], dp[i][j - 1]);
-    }
-  }
-  // Backtrack to find which tokens are in LCS (for both orig and corr)
-  const origInLCS = new Uint8Array(m);
-  const corrInLCS = new Uint8Array(n);
-  let i = m, j = n;
-  while (i > 0 && j > 0) {
-    if (origTokens[i - 1].value === corrTokens[j - 1].value) {
-      origInLCS[i - 1] = 1;
-      corrInLCS[j - 1] = 1;
-      i--; j--;
-    } else if (dp[i - 1][j] >= dp[i][j - 1]) {
-      i--;
-    } else {
-      j--;
-    }
-  }
-  // Build correction HTML (added parts highlighted in purple)
-  let corrHtml = '';
-  let inSpan = false;
-  for (let k = 0; k < n; k++) {
-    const token = corrTokens[k];
-    const escaped = escapeHTML(token.value);
-    if (corrInLCS[k] || token.isSpace) {
-      if (inSpan) { corrHtml += '</span>'; inSpan = false; }
-      corrHtml += escaped;
-    } else {
-      if (!inSpan) { corrHtml += '<span class="highlight">'; inSpan = true; }
-      corrHtml += escaped;
-    }
-  }
-  if (inSpan) corrHtml += '</span>';
-  // Build deletion HTML (deleted parts from original in red)
-  let delHtml = '';
-  inSpan = false;
-  for (let k = 0; k < m; k++) {
-    const token = origTokens[k];
-    const escaped = escapeHTML(token.value);
-    if (origInLCS[k] || token.isSpace) {
-      if (inSpan) { delHtml += '</span>'; inSpan = false; }
-      delHtml += escaped;
-    } else {
-      if (!inSpan) { delHtml += '<span class="deletion">'; inSpan = true; }
-      delHtml += escaped;
-    }
-  }
-  if (inSpan) delHtml += '</span>';
-  return { corrHtml, delHtml };
-}
+        document.getElementById("current").textContent = idx + 1;
+        document.getElementById("original").textContent = orig;
+        const diffA = diffHighlight(orig, a);
+        const diffB = diffHighlight(orig, b);
+        document.getElementById("delA").innerHTML = diffA.delHtml;
+        document.getElementById("corrA").innerHTML = diffA.corrHtml;
+        document.getElementById("delB").innerHTML = diffB.delHtml;
+        document.getElementById("corrB").innerHTML = diffB.corrHtml;
+        document.getElementById("prevBtn").disabled = idx === 0;
+        document.getElementById("nextBtn").disabled = idx === data.length - 1;
+      }
 
-function escapeHTML(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
+      function go(d) {
+        const next = idx + d;
+        if (next >= 0 && next < data.length) {
+          idx = next;
+          render();
+        }
+      }
 
-function render() {
-  const row = data[idx];
-  const orig = row[0], hint = row[1], a = row[2], b = row[3];
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") go(-1);
+        if (e.key === "ArrowRight") go(1);
+      });
 
-  document.getElementById('current').textContent = idx + 1;
-  document.getElementById('original').textContent = orig;
-  document.getElementById('hint').textContent = hint;
-  const diffA = diffHighlight(orig, a);
-  const diffB = diffHighlight(orig, b);
-  document.getElementById('delA').innerHTML = diffA.delHtml;
-  document.getElementById('corrA').innerHTML = diffA.corrHtml;
-  document.getElementById('delB').innerHTML = diffB.delHtml;
-  document.getElementById('corrB').innerHTML = diffB.corrHtml;
-  document.getElementById('prevBtn').disabled = idx === 0;
-  document.getElementById('nextBtn').disabled = idx === data.length - 1;
-}
-
-function go(d) {
-  const next = idx + d;
-  if (next >= 0 && next < data.length) {
-    idx = next;
-    render();
-  }
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft') go(-1);
-  if (e.key === 'ArrowRight') go(1);
-});
-
-fetch('한국어 맞춤법 문법 교정 100선 - 행열셔플 - v1.csv')
-  .then(r => r.text())
-  .then(text => {
-    data = parseCSV(text);
-    document.getElementById('total').textContent = data.length;
-    if (data.length) render();
-  });
-</script>
-</body>
+      fetch("한국어 맞춤법 문법 교정 100선 - 행열셔플 - v1.csv")
+        .then((r) => r.text())
+        .then((text) => {
+          data = parseCSV(text);
+          document.getElementById("total").textContent = data.length;
+          if (data.length) render();
+        });
+    </script>
+  </body>
 </html>
