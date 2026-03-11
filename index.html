@@ -99,6 +99,16 @@
     font-size: 1.1rem;
     line-height: 1.8;
   }
+  .deletion-line {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #bbb;
+    margin-bottom: 0.4rem;
+  }
+  .deletion {
+    color: #e05252;
+    text-decoration: line-through;
+  }
   .highlight {
     background: rgba(124, 58, 237, 0.15);
     color: #7C3AED;
@@ -147,11 +157,13 @@
 
   <div class="section">
     <div class="section-label">A 교정문</div>
+    <div class="deletion-line" id="delA"></div>
     <div class="correction-text" id="corrA"></div>
   </div>
 
   <div class="section">
     <div class="section-label">B 교정문</div>
+    <div class="deletion-line" id="delB"></div>
     <div class="correction-text" id="corrB"></div>
   </div>
 
@@ -218,22 +230,39 @@ function parseCSV(text) {
   return rows;
 }
 
-// LCS-based diff: returns HTML with highlights for parts in `corr` that differ from `orig`
+// Tokenize text into morpheme-like units (어절 + 공백/구두점)
+function tokenize(text) {
+  const tokens = [];
+  const re = /(\s+)|(\S+)/g;
+  let match;
+  while ((match = re.exec(text)) !== null) {
+    tokens.push({ value: match[0], isSpace: !!match[1] });
+  }
+  return tokens;
+}
+
+// LCS-based diff (형태소/어절 단위): returns HTML with highlights for parts in `corr` that differ from `orig`
 function diffHighlight(orig, corr) {
-  const m = orig.length, n = corr.length;
-  // Build LCS table
+  const origTokens = tokenize(orig);
+  const corrTokens = tokenize(corr);
+  const m = origTokens.length, n = corrTokens.length;
+  // Build LCS table on tokens
   const dp = Array.from({ length: m + 1 }, () => new Uint16Array(n + 1));
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
-      dp[i][j] = orig[i - 1] === corr[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1]);
+      dp[i][j] = origTokens[i - 1].value === corrTokens[j - 1].value
+        ? dp[i - 1][j - 1] + 1
+        : Math.max(dp[i - 1][j], dp[i][j - 1]);
     }
   }
-  // Backtrack to find which chars in corr are in LCS
-  const inLCS = new Uint8Array(n);
+  // Backtrack to find which tokens are in LCS (for both orig and corr)
+  const origInLCS = new Uint8Array(m);
+  const corrInLCS = new Uint8Array(n);
   let i = m, j = n;
   while (i > 0 && j > 0) {
-    if (orig[i - 1] === corr[j - 1]) {
-      inLCS[j - 1] = 1;
+    if (origTokens[i - 1].value === corrTokens[j - 1].value) {
+      origInLCS[i - 1] = 1;
+      corrInLCS[j - 1] = 1;
       i--; j--;
     } else if (dp[i - 1][j] >= dp[i][j - 1]) {
       i--;
@@ -241,21 +270,37 @@ function diffHighlight(orig, corr) {
       j--;
     }
   }
-  // Build HTML
-  let html = '';
+  // Build correction HTML (added parts highlighted in purple)
+  let corrHtml = '';
   let inSpan = false;
   for (let k = 0; k < n; k++) {
-    const ch = corr[k] === '<' ? '&lt;' : corr[k] === '>' ? '&gt;' : corr[k] === '&' ? '&amp;' : corr[k];
-    if (inLCS[k]) {
-      if (inSpan) { html += '</span>'; inSpan = false; }
-      html += ch;
+    const token = corrTokens[k];
+    const escaped = escapeHTML(token.value);
+    if (corrInLCS[k] || token.isSpace) {
+      if (inSpan) { corrHtml += '</span>'; inSpan = false; }
+      corrHtml += escaped;
     } else {
-      if (!inSpan) { html += '<span class="highlight">'; inSpan = true; }
-      html += ch;
+      if (!inSpan) { corrHtml += '<span class="highlight">'; inSpan = true; }
+      corrHtml += escaped;
     }
   }
-  if (inSpan) html += '</span>';
-  return html;
+  if (inSpan) corrHtml += '</span>';
+  // Build deletion HTML (deleted parts from original in red)
+  let delHtml = '';
+  inSpan = false;
+  for (let k = 0; k < m; k++) {
+    const token = origTokens[k];
+    const escaped = escapeHTML(token.value);
+    if (origInLCS[k] || token.isSpace) {
+      if (inSpan) { delHtml += '</span>'; inSpan = false; }
+      delHtml += escaped;
+    } else {
+      if (!inSpan) { delHtml += '<span class="deletion">'; inSpan = true; }
+      delHtml += escaped;
+    }
+  }
+  if (inSpan) delHtml += '</span>';
+  return { corrHtml, delHtml };
 }
 
 function escapeHTML(s) {
@@ -269,8 +314,12 @@ function render() {
   document.getElementById('current').textContent = idx + 1;
   document.getElementById('original').textContent = orig;
   document.getElementById('hint').textContent = hint;
-  document.getElementById('corrA').innerHTML = diffHighlight(orig, a);
-  document.getElementById('corrB').innerHTML = diffHighlight(orig, b);
+  const diffA = diffHighlight(orig, a);
+  const diffB = diffHighlight(orig, b);
+  document.getElementById('delA').innerHTML = diffA.delHtml;
+  document.getElementById('corrA').innerHTML = diffA.corrHtml;
+  document.getElementById('delB').innerHTML = diffB.delHtml;
+  document.getElementById('corrB').innerHTML = diffB.corrHtml;
   document.getElementById('prevBtn').disabled = idx === 0;
   document.getElementById('nextBtn').disabled = idx === data.length - 1;
 }
